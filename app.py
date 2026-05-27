@@ -118,7 +118,7 @@ def horarios_disponibles(fecha, duracion, giro):
 
     return disponibles
 
-logo = Image.open("kroniq.png")
+logo = Image.open("ChatGPT Image 27 may 2026, 13_51_40.png")
 st.image(logo, use_container_width=True)
 
 st.write("Demo de agenda digital para negocios que trabajan por cita.")
