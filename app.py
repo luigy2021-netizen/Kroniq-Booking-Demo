@@ -5,7 +5,7 @@ from google.oauth2.service_account import Credentials
 
 st.set_page_config(page_title="KroniQ Booking Demo", page_icon="🔷", layout="centered")
 
-SHEET_ID = "AQUI_PEGA_EL_ID_DEL_NUEVO_SHEET"
+SHEET_ID = "1CiFPrWzvyeaTtdiMVYZ8a3DyxONSi4ZEpn2kNM0LSeU"
 
 NEGOCIOS = {
     "Barbería": {
