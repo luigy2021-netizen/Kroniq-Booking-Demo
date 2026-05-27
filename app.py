@@ -1,4 +1,5 @@
 import streamlit as st
+from PIL import Image
 import gspread
 from datetime import datetime, date, time, timedelta
 from google.oauth2.service_account import Credentials
@@ -117,8 +118,9 @@ def horarios_disponibles(fecha, duracion, giro):
 
     return disponibles
 
-st.markdown("# KroniQ Booking")
-st.markdown("### Sincroniza tu tiempo, impulsa tu negocio.")
+logo = Image.open("kroniq.png")
+st.image(logo, use_container_width=True)
+
 st.write("Demo de agenda digital para negocios que trabajan por cita.")
 
 st.markdown("---")
