@@ -118,7 +118,7 @@ def horarios_disponibles(fecha, duracion, giro):
 
     return disponibles
 
-Logotipo = Imagen.abierto("logo.png")
+Logotipo = Image.open("logo.png")
 st.image(logo, use_container_width=True)
 
 st.write("Demo de agenda digital para negocios que trabajan por cita.")
