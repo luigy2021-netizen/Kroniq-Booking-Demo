@@ -118,7 +118,7 @@ def horarios_disponibles(fecha, duracion, giro):
 
     return disponibles
 
-logo = Image.open("kroniq booking.png")
+logo = Image.open("kroniq.png")
 st.image(logo, use_container_width=True)
 
 st.write("Demo de agenda digital para negocios que trabajan por cita.")
