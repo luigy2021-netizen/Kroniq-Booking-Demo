@@ -5,7 +5,6 @@ from pathlib import Path
 
 import gspread
 import streamlit as st
-import streamlit.components.v1 as components
 from google.oauth2.service_account import Credentials
 from PIL import Image
 
@@ -404,50 +403,6 @@ def inject_css():
         <meta name="theme-color" content="#090b10">
         """,
         unsafe_allow_html=True,
-    )
-    components.html(
-        """
-        <script>
-            const version = "20260530-2";
-            const assets = {
-                apple: `/app/static/apple-touch-icon.png?v=${version}`,
-                icon192: `/app/static/icon-192.png?v=${version}`,
-                manifest: `/app/static/manifest.webmanifest?v=${version}`
-            };
-
-            function upsertLink(rel, href, attrs = {}) {
-                const parentDoc = window.parent.document;
-                let node = parentDoc.querySelector(`link[rel="${rel}"]`);
-                if (!node) {
-                    node = parentDoc.createElement("link");
-                    node.setAttribute("rel", rel);
-                    parentDoc.head.appendChild(node);
-                }
-                node.setAttribute("href", href);
-                Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
-            }
-
-            function upsertMeta(name, content) {
-                const parentDoc = window.parent.document;
-                let node = parentDoc.querySelector(`meta[name="${name}"]`);
-                if (!node) {
-                    node = parentDoc.createElement("meta");
-                    node.setAttribute("name", name);
-                    parentDoc.head.appendChild(node);
-                }
-                node.setAttribute("content", content);
-            }
-
-            upsertLink("apple-touch-icon", assets.apple, { sizes: "180x180" });
-            upsertLink("icon", assets.icon192, { type: "image/png", sizes: "192x192" });
-            upsertLink("manifest", assets.manifest);
-            upsertMeta("apple-mobile-web-app-title", "KroniQ Booking");
-            upsertMeta("application-name", "KroniQ Booking");
-            upsertMeta("theme-color", "#090b10");
-        </script>
-        """,
-        height=0,
-        width=0,
     )
 
 
