@@ -8,12 +8,9 @@ import streamlit as st
 from google.oauth2.service_account import Credentials
 from PIL import Image
 
-
-APP_ICON_PATH = "app_icon.png"
-
 st.set_page_config(
     page_title="KroniQ Booking",
-    page_icon=APP_ICON_PATH,
+    page_icon="K",
     layout="centered",
     initial_sidebar_state="collapsed",
 )
@@ -396,11 +393,6 @@ def inject_css():
                 }
             }
         </style>
-        <link rel="apple-touch-icon" href="app_icon.png">
-        <link rel="icon" type="image/png" href="app_icon.png">
-        <meta name="apple-mobile-web-app-title" content="KroniQ Booking">
-        <meta name="application-name" content="KroniQ Booking">
-        <meta name="theme-color" content="#090b10">
         """,
         unsafe_allow_html=True,
     )
