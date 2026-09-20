@@ -47,7 +47,7 @@ NEGOCIOS = {
 
 PLANES = {
     "Starter": [
-        "Agenda personalizada con la imagen de tu negocio",
+        "Agenda personalizada con logo e imagen de tu negocio",
         "Bloqueo automático de horarios empalmados",
         "Comentarios adicionales en cada reservación",
         "Confirmación de cita por WhatsApp",
@@ -89,7 +89,6 @@ def imagen_base64(nombre):
 
 def aplicar_estilos():
     boton_cita = imagen_base64("agendar-cita-kroniq.jpg")
-    boton_video = imagen_base64("Agenda-videollamada_kroniq.jpg")
 
     st.markdown(
         f"""
@@ -98,20 +97,22 @@ def aplicar_estilos():
 
         :root {{
             --black: #111111;
+            --black-soft: #0b0f13;
             --white: #f8fbff;
-            --muted: #c2cfda;
-            --aqua: #5be8df;
-            --line: rgba(168, 234, 255, .34);
-            --glass: rgba(15, 24, 31, .72);
+            --muted: #c0ccd7;
+            --aqua: #59e8df;
+            --line: rgba(151, 229, 255, .35);
         }}
 
         .stApp {{
-            background: var(--black);
+            background: var(--black) !important;
             color: var(--white);
             font-family: "DM Sans", sans-serif;
         }}
 
-        #MainMenu, footer, header {{ visibility: hidden; }}
+        #MainMenu, footer, header {{
+            visibility: hidden;
+        }}
 
         .block-container {{
             max-width: 900px;
@@ -124,13 +125,8 @@ def aplicar_estilos():
             letter-spacing: -.04em;
         }}
 
-        h1 {{
-            font-size: clamp(2.35rem, 8vw, 4.4rem) !important;
-            line-height: 1.04 !important;
-        }}
-
         h2 {{
-            font-size: clamp(1.75rem, 5vw, 2.45rem) !important;
+            font-size: clamp(1.8rem, 5vw, 2.45rem) !important;
         }}
 
         h3 {{
@@ -139,14 +135,14 @@ def aplicar_estilos():
 
         p, label {{
             color: var(--muted) !important;
-            font-size: clamp(1rem, 2.5vw, 1.12rem) !important;
+            font-size: clamp(1rem, 2.5vw, 1.1rem) !important;
         }}
 
         .hero {{
             overflow: hidden;
-            margin: 0 0 2.5rem;
-            border-radius: 25px;
-            box-shadow: 0 22px 46px rgba(0, 0, 0, .45);
+            margin: 0 0 3rem;
+            border-radius: 24px;
+            box-shadow: 0 20px 45px rgba(0,0,0,.48);
         }}
 
         .hero img {{
@@ -155,13 +151,8 @@ def aplicar_estilos():
             height: auto;
         }}
 
-        .glass {{
-            padding: clamp(1.3rem, 4vw, 2.3rem);
-            margin: 1rem 0;
-            border: 1px solid var(--line);
-            border-radius: 24px;
-            background: linear-gradient(135deg, rgba(255,255,255,.11), rgba(255,255,255,.02)), var(--glass);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 15px 35px rgba(0,0,0,.34);
+        .section {{
+            margin: 3rem 0 1rem;
         }}
 
         .eyebrow {{
@@ -172,8 +163,18 @@ def aplicar_estilos():
             text-transform: uppercase;
         }}
 
-        .section {{
-            margin: 3.2rem 0 1rem;
+        .glass-card {{
+            padding: clamp(1.3rem, 4vw, 2.25rem);
+            margin: 1rem 0;
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            background: linear-gradient(
+                135deg,
+                rgba(255,255,255,.10),
+                rgba(255,255,255,.02)
+            ), rgba(16, 25, 33, .82);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.14),
+                        0 15px 34px rgba(0,0,0,.34);
         }}
 
         .service {{
@@ -181,7 +182,7 @@ def aplicar_estilos():
             padding: 1rem 1.1rem;
             border: 1px solid var(--line);
             border-radius: 17px;
-            background: rgba(9, 16, 22, .92);
+            background: var(--black-soft);
             color: var(--white);
             font-size: 1.08rem;
             font-weight: 600;
@@ -195,28 +196,36 @@ def aplicar_estilos():
             padding: 1.3rem;
             border: 1px solid var(--line);
             border-radius: 24px;
-            background: linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.02)), var(--glass);
+            background: linear-gradient(
+                135deg,
+                rgba(255,255,255,.10),
+                rgba(255,255,255,.02)
+            ), rgba(16, 25, 33, .82);
         }}
 
-        div[data-baseweb="select"] > div,
-        div[data-baseweb="input"] > div,
+        .stSelectbox div[data-baseweb="select"] > div,
+        .stDateInput input,
         .stTextInput input,
         .stTextArea textarea,
-        .stDateInput input {{
+        div[data-baseweb="input"] > div {{
             min-height: 56px !important;
             border: 1px solid var(--line) !important;
             border-radius: 15px !important;
-            background: #0c131a !important;
+            background: var(--black-soft) !important;
             color: var(--white) !important;
             font-size: 1.05rem !important;
+            box-shadow: none !important;
         }}
 
         .stTextArea textarea {{
             min-height: 120px !important;
         }}
 
-        div[data-baseweb="select"] * {{
+        .stSelectbox div[data-baseweb="select"] span,
+        .stSelectbox div[data-baseweb="select"] input,
+        .stSelectbox div[data-baseweb="select"] svg {{
             color: var(--white) !important;
+            fill: var(--white) !important;
         }}
 
         div[data-testid="stWidgetLabel"] p {{
@@ -225,25 +234,31 @@ def aplicar_estilos():
             font-weight: 600 !important;
         }}
 
+        .stTextInput input:focus,
+        .stTextArea textarea:focus,
+        .stDateInput input:focus,
+        .stSelectbox div[data-baseweb="select"] > div:focus-within {{
+            border-color: var(--aqua) !important;
+            box-shadow: 0 0 0 3px rgba(89,232,223,.14) !important;
+        }}
+
         div[data-testid="stFormSubmitButton"] button {{
-            min-height: 64px !important;
+            min-height: 66px !important;
             border: 0 !important;
             border-radius: 18px !important;
             background: url("data:image/jpeg;base64,{boton_cita}") center / 100% 100% !important;
-            color: var(--white) !important;
-            font-family: "Space Grotesk", sans-serif !important;
-            font-size: 1.12rem !important;
-            font-weight: 700 !important;
-            text-shadow: 0 2px 5px #000 !important;
+            color: transparent !important;
+            text-shadow: none !important;
+            box-shadow: none !important;
         }}
 
         .image-button {{
-            position: relative;
             display: block;
             width: 100%;
-            margin: .8rem 0;
+            margin: 1rem 0;
             overflow: hidden;
             border-radius: 19px;
+            line-height: 0;
             text-decoration: none !important;
             transition: transform .18s ease;
         }}
@@ -258,43 +273,20 @@ def aplicar_estilos():
             height: auto;
         }}
 
-        .image-button span {{
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            font-family: "Space Grotesk", sans-serif;
-            font-size: clamp(1.12rem, 3vw, 1.42rem);
-            font-weight: 700;
-            text-shadow: 0 2px 6px #000;
-        }}
-
-        .video-link {{
-            display: block;
-            min-height: 64px;
-            border-radius: 18px;
-            background: url("data:image/jpeg;base64,{boton_video}") center / 100% 100%;
-            color: var(--white) !important;
-            font-family: "Space Grotesk", sans-serif;
-            font-size: 1.15rem;
-            font-weight: 700;
-            line-height: 64px;
-            text-align: center;
-            text-decoration: none !important;
-            text-shadow: 0 2px 6px #000;
-        }}
-
         .stAlert {{
             border-radius: 16px !important;
-            background: rgba(10, 48, 50, .9) !important;
+            background: rgba(10,48,50,.9) !important;
             color: var(--white) !important;
         }}
 
         @media(max-width:640px) {{
-            .block-container {{ padding: .8rem .8rem 4rem; }}
-            .hero {{ border-radius: 18px; }}
+            .block-container {{
+                padding: .8rem .8rem 4rem;
+            }}
+
+            .hero {{
+                border-radius: 18px;
+            }}
         }}
         </style>
         """,
@@ -327,7 +319,11 @@ def horarios_disponibles(fecha, duracion, giro):
                 f"{fila[6]} {fila[7]}",
                 "%Y-%m-%d %I:%M %p",
             )
-            citas.append((inicio, inicio + timedelta(minutes=int(fila[5]))))
+
+            citas.append(
+                (inicio, inicio + timedelta(minutes=int(fila[5])))
+            )
+
     except Exception:
         pass
 
@@ -339,13 +335,16 @@ def horarios_disponibles(fecha, duracion, giro):
 
     while actual < cierre:
         fin = actual + timedelta(minutes=duracion)
+
         ocupado = any(
             se_empalma(actual, fin, inicio, termino)
             for inicio, termino in citas
         )
 
-        if fin <= cierre and not ocupado and not se_empalma(
-            actual, fin, comida_inicio, comida_fin
+        if (
+            fin <= cierre
+            and not ocupado
+            and not se_empalma(actual, fin, comida_inicio, comida_fin)
         ):
             disponibles.append(actual.strftime("%I:%M %p"))
 
@@ -367,15 +366,14 @@ def crear_qr():
     return buffer
 
 
-def boton_imagen(nombre_archivo, texto, plan):
-    imagen = imagen_base64(nombre_archivo)
+def boton_imagen(archivo, plan):
+    imagen = imagen_base64(archivo)
 
     if imagen:
         st.markdown(
             f"""
             <a class="image-button" href="?plan={plan}">
-                <img src="data:image/jpeg;base64,{imagen}" alt="{texto}">
-                <span>{texto}</span>
+                <img src="data:image/jpeg;base64,{imagen}" alt="Conoce {plan}">
             </a>
             """,
             unsafe_allow_html=True,
@@ -397,23 +395,13 @@ hero = imagen_base64("hero-logo-kroniq.jpg")
 
 if hero:
     st.markdown(
-        f'<div class="hero"><img src="data:image/jpeg;base64,{hero}" alt="KroniQ Booking"></div>',
+        f"""
+        <div class="hero">
+            <img src="data:image/jpeg;base64,{hero}" alt="KroniQ Booking">
+        </div>
+        """,
         unsafe_allow_html=True,
     )
-
-st.markdown(
-    """
-    <section class="glass">
-        <div class="eyebrow">Agenda inteligente para negocios</div>
-        <h1>Simplemente agenda.<br>KroniQ se encarga del resto.</h1>
-        <p>
-            Descubre una experiencia de reservación clara, moderna y profesional
-            para tus clientes.
-        </p>
-    </section>
-    """,
-    unsafe_allow_html=True,
-)
 
 st.markdown(
     """
@@ -509,15 +497,15 @@ st.markdown(
     <section class="section">
         <div class="eyebrow">Soluciones para crecer</div>
         <h2>Descubre lo que KroniQ puede hacer por tu negocio</h2>
-        <p>Conoce las herramientas disponibles para cada etapa de tu negocio.</p>
+        <p>Elige una opción para conocer sus beneficios.</p>
     </section>
     """,
     unsafe_allow_html=True,
 )
 
-boton_imagen(BOTONES_PLANES["Starter"], "Conoce Starter", "Starter")
-boton_imagen(BOTONES_PLANES["Business"], "Conoce Business", "Business")
-boton_imagen(BOTONES_PLANES["Premium"], "Conoce Premium", "Premium")
+boton_imagen(BOTONES_PLANES["Starter"], "Starter")
+boton_imagen(BOTONES_PLANES["Business"], "Business")
+boton_imagen(BOTONES_PLANES["Premium"], "Premium")
 
 if st.session_state.plan:
     beneficios = "".join(
@@ -527,7 +515,7 @@ if st.session_state.plan:
 
     st.markdown(
         f"""
-        <section class="glass">
+        <section class="glass-card">
             <div class="eyebrow">{st.session_state.plan}</div>
             <h3>Esto es lo que puedes lograr</h3>
             <ul style="line-height:1.8;color:#f8fbff;font-size:1.08rem">
@@ -547,7 +535,7 @@ if st.session_state.plan:
         with derecha:
             st.markdown(
                 """
-                <section class="glass">
+                <section class="glass-card">
                     <div class="eyebrow">Comparte tu agenda</div>
                     <h3>Imprime o publica tu código QR</h3>
                     <p>
@@ -564,29 +552,27 @@ mensaje = quote(
     "agendar una videollamada."
 )
 
+boton_video = imagen_base64("Agenda-videollamada_kroniq.jpg")
+
 st.markdown(
     """
-    <section class="glass">
+    <section class="glass-card">
         <div class="eyebrow">El siguiente paso</div>
         <h2>¿Te imaginas esta agenda en tu negocio?</h2>
-        <p>
-            Vamos a conocernos y a diseñar una experiencia de reservación
-            para tu negocio.
-        </p>
+        <p>Vamos a conocernos y a diseñar una agenda para tu negocio.</p>
     </section>
     """,
     unsafe_allow_html=True,
 )
 
-boton_video = imagen_base64("Agenda-videollamada_kroniq.jpg")
-
 if boton_video:
     st.markdown(
         f"""
-        <a class="video-link"
+        <a class="image-button"
            href="https://wa.me/{WHATSAPP_VENTAS}?text={mensaje}"
            target="_blank">
-           Agendar una videollamada
+            <img src="data:image/jpeg;base64,{boton_video}"
+                 alt="Agendar una videollamada">
         </a>
         """,
         unsafe_allow_html=True,
