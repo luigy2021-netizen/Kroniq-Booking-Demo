@@ -95,7 +95,7 @@ def aplicar_estilos():
 
         :root {
             --black: #111111;
-            --black-soft: #0b1015;
+            --field: #0b1015;
             --white: #f8fbff;
             --muted: #c2ced8;
             --aqua: #59e8df;
@@ -158,8 +158,6 @@ def aplicar_estilos():
                 rgba(255,255,255,.10),
                 rgba(255,255,255,.02)
             ), rgba(16,25,33,.84);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,.14),
-                        0 15px 34px rgba(0,0,0,.34);
         }
 
         .service {
@@ -167,7 +165,7 @@ def aplicar_estilos():
             padding: 1rem 1.1rem;
             border: 1px solid var(--line);
             border-radius: 17px;
-            background: var(--black-soft);
+            background: var(--field);
             color: var(--white);
             font-size: 1.08rem;
             font-weight: 600;
@@ -179,28 +177,25 @@ def aplicar_estilos():
             padding: 1.3rem;
             border: 1px solid var(--line);
             border-radius: 24px;
-            background: linear-gradient(
-                135deg,
-                rgba(255,255,255,.10),
-                rgba(255,255,255,.02)
-            ), rgba(16,25,33,.84);
+            background: rgba(16,25,33,.84);
         }
 
-        .stSelectbox div[data-baseweb="select"] > div,
-        .stDateInput div[data-baseweb="input"] > div,
-        .stTextInput div[data-baseweb="input"] > div,
-        .stTextArea textarea,
+        .stSelectbox [data-baseweb="select"] > div,
+        .stSelectbox [role="combobox"],
         .stDateInput input,
-        .stTextInput input {
-            background-color: var(--black-soft) !important;
+        .stDateInput [data-baseweb="input"] > div,
+        .stTextInput input,
+        .stTextInput [data-baseweb="input"] > div,
+        .stTextArea textarea {
+            background: var(--field) !important;
+            background-color: var(--field) !important;
             color: var(--white) !important;
             border: 1px solid var(--line) !important;
             border-radius: 15px !important;
             box-shadow: none !important;
-            font-size: 1.05rem !important;
         }
 
-        .stSelectbox div[data-baseweb="select"] > div,
+        .stSelectbox [data-baseweb="select"] > div,
         .stDateInput input,
         .stTextInput input {
             min-height: 56px !important;
@@ -211,9 +206,10 @@ def aplicar_estilos():
             max-height: 82px !important;
         }
 
-        .stSelectbox div[data-baseweb="select"] span,
-        .stSelectbox div[data-baseweb="select"] input,
-        .stSelectbox div[data-baseweb="select"] svg {
+        .stSelectbox [data-baseweb="select"] *,
+        .stDateInput input,
+        .stTextInput input,
+        .stTextArea textarea {
             color: var(--white) !important;
             fill: var(--white) !important;
         }
@@ -227,29 +223,32 @@ def aplicar_estilos():
         .stTextInput input:focus,
         .stTextArea textarea:focus,
         .stDateInput input:focus,
-        .stSelectbox div[data-baseweb="select"] > div:focus-within {
+        .stSelectbox [role="combobox"]:focus-within {
             border-color: var(--aqua) !important;
             box-shadow: 0 0 0 3px rgba(89,232,223,.14) !important;
         }
 
-        .image-button {
+        .plan-button {
             display: block;
             width: 100%;
-            margin: 1rem 0;
             overflow: hidden;
-            border-radius: 18px;
+            border-radius: 15px;
             line-height: 0;
             text-decoration: none !important;
             transition: transform .18s ease;
         }
 
-        .image-button:hover { transform: translateY(-2px); }
-        .image-button img { display: block; width: 100%; }
+        .plan-button:hover { transform: translateY(-2px); }
+        .plan-button img { display: block; width: 100%; }
 
         .stAlert {
             border-radius: 16px !important;
             background: rgba(10,48,50,.9) !important;
             color: var(--white) !important;
+        }
+
+        @media(max-width:640px) {
+            .block-container { padding: .8rem .8rem 4rem; }
         }
         </style>
         """,
@@ -282,6 +281,7 @@ def horarios_disponibles(fecha, duracion, giro):
                 f"{fila[6]} {fila[7]}",
                 "%Y-%m-%d %I:%M %p",
             )
+
             citas.append((inicio, inicio + timedelta(minutes=int(fila[5]))))
     except Exception:
         pass
@@ -325,35 +325,26 @@ def crear_qr():
     return buffer
 
 
-def boton_imagen(archivo, plan):
-    imagen = imagen_base64(archivo)
-
-    if imagen:
-        if st.button("", key=f"plan_{plan}", use_container_width=True):
-            st.session_state.plan = plan
-
-        st.markdown(
-            f"""
-            <style>
-            div[data-testid="stButton"]:has(button[kind="secondary"]) button {{
-                min-height: 0 !important;
-            }}
-            </style>
-            """,
-            unsafe_allow_html=True,
-        )
-
-
 aplicar_estilos()
 
 if "plan" not in st.session_state:
     st.session_state.plan = None
 
+if "plan" in st.query_params:
+    plan = st.query_params["plan"]
+
+    if plan in PLANES:
+        st.session_state.plan = plan
+
 hero = imagen_base64("hero-logo-kroniq.jpg")
 
 if hero:
     st.markdown(
-        f'<div class="hero"><img src="data:image/jpeg;base64,{hero}" alt="KroniQ Booking"></div>',
+        f"""
+        <div class="hero">
+            <img src="data:image/jpeg;base64,{hero}" alt="KroniQ Booking">
+        </div>
+        """,
         unsafe_allow_html=True,
     )
 
@@ -374,7 +365,7 @@ servicios = NEGOCIOS[giro]
 st.markdown("### Servicios disponibles")
 
 for nombre, minutos in servicios.items():
-    texto = (
+    duracion = (
         f"{minutos} min"
         if minutos < 60
         else "1 hora"
@@ -383,7 +374,7 @@ for nombre, minutos in servicios.items():
     )
 
     st.markdown(
-        f'<div class="service"><span>{nombre}</span> · {texto}</div>',
+        f'<div class="service"><span>{nombre}</span> · {duracion}</div>',
         unsafe_allow_html=True,
     )
 
@@ -395,7 +386,6 @@ horas = horarios_disponibles(fecha, duracion, giro)
 if horas:
     with st.form("cita", clear_on_submit=True):
         st.markdown("### Crea una cita de prueba")
-
         nombre = st.text_input("Nombre completo")
         whatsapp = st.text_input("WhatsApp (10 dígitos)", max_chars=10)
         hora = st.selectbox("Hora disponible", horas)
@@ -430,9 +420,7 @@ if horas:
                         st.session_state.plan or "Sin seleccionar",
                     ]
                 )
-
                 st.success("Cita demo guardada correctamente.")
-
             except Exception:
                 st.error("No fue posible guardar la cita. Intenta de nuevo más tarde.")
 else:
@@ -448,21 +436,21 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-for plan, archivo in BOTONES_PLANES.items():
-    imagen = imagen_base64(archivo)
+col1, col2, col3 = st.columns(3)
 
-    if imagen:
-        st.markdown(
-            f"""
-            <a class="image-button" href="javascript:void(0)">
-                <img src="data:image/jpeg;base64,{imagen}" alt="Conoce {plan}">
-            </a>
-            """,
-            unsafe_allow_html=True,
-        )
+for columna, plan in zip((col1, col2, col3), BOTONES_PLANES):
+    imagen = imagen_base64(BOTONES_PLANES[plan])
 
-    if st.button(f"Mostrar {plan}", key=f"mostrar_{plan}", use_container_width=True):
-        st.session_state.plan = plan
+    with columna:
+        if imagen:
+            st.markdown(
+                f"""
+                <a class="plan-button" href="?plan={plan}" target="_self">
+                    <img src="data:image/jpeg;base64,{imagen}" alt="Conoce {plan}">
+                </a>
+                """,
+                unsafe_allow_html=True,
+            )
 
 if st.session_state.plan:
     beneficios = "".join(
@@ -510,7 +498,7 @@ llamada = imagen_base64("llamada-accion-kroniq.jpg")
 if llamada:
     st.markdown(
         f"""
-        <a class="image-button"
+        <a class="plan-button"
            href="https://wa.me/{WHATSAPP_VENTAS}?text={mensaje}"
            target="_blank">
             <img src="data:image/jpeg;base64,{llamada}"
