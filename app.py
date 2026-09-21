@@ -81,30 +81,33 @@ def aplicar_estilos():
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
 
         :root {
-            --bg: #101010;
-            --surface: #17212a;
-            --field: #091016;
-            --text: #f5f8fc;
-            --muted: #b7c4ce;
-            --aqua: #59e8df;
-            --line: rgba(135, 220, 255, .43);
+            --bg: #070b0f;
+            --surface: rgba(18, 27, 35, .72);
+            --surface-2: rgba(24, 35, 44, .86);
+            --field: #0d141a;
+            --text: #f4f8fb;
+            --muted: #91a2ae;
+            --aqua: #5de8df;
+            --aqua-soft: rgba(93, 232, 223, .12);
+            --line: rgba(255, 255, 255, .09);
+            --line-active: rgba(93, 232, 223, .55);
         }
 
         .stApp,
         [data-testid="stAppViewContainer"],
         .main {
-            background: var(--bg) !important;
+            background:
+                radial-gradient(circle at 50% -10%, rgba(35, 116, 122, .16), transparent 34rem),
+                var(--bg) !important;
             color: var(--text) !important;
             font-family: "DM Sans", sans-serif;
         }
 
-        #MainMenu, footer, header {
-            visibility: hidden;
-        }
+        #MainMenu, footer, header { visibility: hidden; }
 
         .block-container {
-            max-width: 920px;
-            padding: 1rem 1rem 4rem !important;
+            max-width: 760px;
+            padding: .8rem 1rem 5rem !important;
         }
 
         h1, h2, h3 {
@@ -114,64 +117,66 @@ def aplicar_estilos():
         }
 
         h2 {
-            font-size: clamp(1.8rem, 5vw, 2.45rem) !important;
+            font-size: clamp(1.75rem, 5vw, 2.35rem) !important;
+            line-height: 1.08 !important;
+            margin-bottom: .55rem !important;
         }
 
-        p, li, .stCaption {
-            color: var(--muted) !important;
-        }
+        h3 { margin-bottom: .4rem !important; }
+
+        p, li, .stCaption { color: var(--muted) !important; }
 
         .hero img {
             display: block;
             width: 100%;
-            border-radius: 24px;
+            border-radius: 26px;
+            border: 1px solid var(--line);
+            box-shadow: 0 24px 70px rgba(0,0,0,.34);
         }
 
-        .section {
-            margin: 2.45rem 0 1rem;
-        }
+        .section { margin: 2.7rem 0 1rem; }
 
         .eyebrow {
             color: var(--aqua);
-            font-weight: 800;
-            font-size: .74rem;
-            letter-spacing: .14em;
+            font-weight: 700;
+            font-size: .72rem;
+            letter-spacing: .13em;
             text-transform: uppercase;
+            margin-bottom: .5rem;
         }
 
         .glass-card,
-        .selected-state {
-            margin: 1rem 0;
-            padding: 1.25rem;
+        .selected-state,
+        .booking-summary {
+            margin: .9rem 0;
+            padding: 1.15rem 1.2rem;
             border: 1px solid var(--line);
             border-radius: 22px;
             background:
-                linear-gradient(
-                    135deg,
-                    rgba(89, 232, 223, .09),
-                    rgba(255, 255, 255, .025)
-                ),
+                linear-gradient(145deg, rgba(255,255,255,.055), rgba(255,255,255,.018)),
                 var(--surface);
-            box-shadow:
-                inset 0 1px 0 rgba(255, 255, 255, .08),
-                0 15px 32px rgba(0, 0, 0, .28);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            box-shadow: 0 18px 50px rgba(0,0,0,.20);
         }
 
-        .service {
-            margin: .55rem 0;
-            padding: .9rem 1rem;
-            border: 1px solid var(--line);
-            border-radius: 16px;
-            background: var(--field);
-            color: var(--text);
-            font-weight: 600;
+        .selected-state {
+            padding: .8rem 1rem;
+            color: var(--muted);
+            font-size: .92rem;
         }
 
-        .service span {
-            color: var(--aqua);
+        .selected-state b { color: var(--text); }
+
+        .booking-summary strong { color: var(--text); }
+        .booking-summary .accent { color: var(--aqua); }
+
+        div[data-testid="stWidgetLabel"] p {
+            color: var(--muted) !important;
+            font-weight: 600 !important;
+            font-size: .88rem !important;
         }
 
-        /* Campos oscuros */
         [data-testid="stSelectbox"] div[data-baseweb="select"] > div,
         [data-testid="stDateInput"] input,
         [data-testid="stTextInput"] input,
@@ -180,19 +185,19 @@ def aplicar_estilos():
             background-color: var(--field) !important;
             color: var(--text) !important;
             border: 1px solid var(--line) !important;
-            border-radius: 13px !important;
+            border-radius: 15px !important;
             box-shadow: none !important;
         }
 
         [data-testid="stSelectbox"] div[data-baseweb="select"] > div,
         [data-testid="stDateInput"] input,
         [data-testid="stTextInput"] input {
-            min-height: 50px !important;
+            min-height: 52px !important;
         }
 
         [data-testid="stTextArea"] textarea {
-            min-height: 76px !important;
-            max-height: 76px !important;
+            min-height: 84px !important;
+            max-height: 110px !important;
         }
 
         [data-testid="stSelectbox"] div[data-baseweb="select"] *,
@@ -206,54 +211,48 @@ def aplicar_estilos():
         div[data-baseweb="popover"],
         ul[role="listbox"],
         [role="option"] {
-            background: var(--field) !important;
+            background: #0d141a !important;
             color: var(--text) !important;
         }
 
         [role="option"]:hover,
         [role="option"][aria-selected="true"] {
-            background: #15232c !important;
+            background: #162229 !important;
         }
 
-        div[data-testid="stWidgetLabel"] p {
-            color: var(--muted) !important;
-            font-weight: 600 !important;
-        }
-
-        /* Botones Liquid Glass */
+        /* Botones: vidrio sobrio, sin glow excesivo */
         .stButton > button,
         .st-key-videollamada a {
-            min-height: 58px !important;
-            border: 1px solid #8edcff !important;
-            border-radius: 999px !important;
+            min-height: 54px !important;
+            border: 1px solid var(--line) !important;
+            border-radius: 16px !important;
             background:
-                radial-gradient(
-                    ellipse at 50% 0%,
-                    rgba(184, 235, 255, .55),
-                    transparent 45%
-                ),
-                linear-gradient(
-                    180deg,
-                    rgba(84, 112, 130, .78),
-                    rgba(12, 18, 24, .91) 56%,
-                    rgba(22, 54, 68, .72)
-                ) !important;
+                linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.025)),
+                var(--surface-2) !important;
             box-shadow:
-                inset 0 1px 1px rgba(255, 255, 255, .82),
-                inset 0 -1px 1px rgba(89, 232, 223, .45),
-                0 0 17px rgba(65, 205, 255, .25),
-                0 10px 20px rgba(0, 0, 0, .36) !important;
+                inset 0 1px 0 rgba(255,255,255,.07),
+                0 8px 24px rgba(0,0,0,.18) !important;
             color: var(--text) !important;
             font-family: "DM Sans", sans-serif !important;
-            font-weight: 700 !important;
-            text-shadow: 0 1px 8px rgba(0, 0, 0, .75) !important;
-            transition: transform .18s ease, filter .18s ease !important;
+            font-weight: 650 !important;
+            transition: transform .16s ease, border-color .16s ease, background .16s ease !important;
         }
 
         .stButton > button:hover,
         .st-key-videollamada a:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.14);
+            transform: translateY(-1px);
+            border-color: rgba(93,232,223,.35) !important;
+            background:
+                linear-gradient(180deg, rgba(93,232,223,.10), rgba(255,255,255,.025)),
+                var(--surface-2) !important;
+        }
+
+        .stButton > button[kind="primary"] {
+            border-color: var(--line-active) !important;
+            background:
+                linear-gradient(180deg, rgba(93,232,223,.22), rgba(93,232,223,.09)),
+                #102328 !important;
+            color: #ecfffd !important;
         }
 
         .st-key-videollamada a {
@@ -261,10 +260,42 @@ def aplicar_estilos():
             align-items: center !important;
             justify-content: center !important;
             text-decoration: none !important;
+            border-radius: 999px !important;
         }
 
-        /* Los tres planes permanecen horizontales en móvil */
+        /* Botones de servicio */
+        [class*="st-key-servicio_"] button {
+            min-height: 72px !important;
+            text-align: left !important;
+            justify-content: flex-start !important;
+            padding: .8rem 1rem !important;
+        }
+
+        /* Chips de horario */
+        [class*="st-key-hora_"] button {
+            min-height: 44px !important;
+            border-radius: 999px !important;
+            padding: .35rem .5rem !important;
+            font-size: .86rem !important;
+        }
+
+        /* Avisos menos invasivos */
+        [data-testid="stAlert"] {
+            border-radius: 16px !important;
+            border: 1px solid var(--line) !important;
+            background: rgba(255,255,255,.035) !important;
+        }
+
         @media (max-width: 640px) {
+            .block-container {
+                padding-left: .78rem !important;
+                padding-right: .78rem !important;
+                padding-top: .45rem !important;
+            }
+
+            .hero img { border-radius: 20px; }
+            .section { margin-top: 2.25rem; }
+
             [data-testid="stHorizontalBlock"]:has(.st-key-plan_starter) {
                 flex-wrap: nowrap !important;
                 gap: .35rem !important;
@@ -280,15 +311,10 @@ def aplicar_estilos():
             .st-key-plan_starter button,
             .st-key-plan_business button,
             .st-key-plan_premium button {
-                min-height: 54px !important;
+                min-height: 50px !important;
                 padding: .25rem !important;
-                font-size: .73rem !important;
+                font-size: .72rem !important;
                 white-space: nowrap !important;
-            }
-
-            .block-container {
-                padding-left: .78rem !important;
-                padding-right: .78rem !important;
             }
         }
         </style>
@@ -375,105 +401,171 @@ def mostrar_experiencia():
     st.markdown(
         """
         <section class="section">
-            <div class="eyebrow">Prueba la experiencia</div>
-            <h2>Así se vería la agenda de tu negocio</h2>
-            <p>Selecciona cada paso para probar el recorrido.</p>
+            <div class="eyebrow">Reserva en segundos</div>
+            <h2>Así se sentiría reservar en tu negocio</h2>
+            <p>Elige una opción y KroniQ te muestra únicamente el siguiente paso.</p>
         </section>
         """,
         unsafe_allow_html=True,
     )
 
     giro = st.selectbox(
-        "Tipo de negocio",
+        "¿Qué tipo de negocio quieres probar?",
         list(NEGOCIOS),
         index=None,
-        placeholder="Selecciona un tipo de negocio",
+        placeholder="Selecciona tu negocio",
+        key="giro_demo",
     )
 
     if not giro:
-        st.info("Selecciona un tipo de negocio para continuar.")
         return
+
+    # Si cambia el giro, limpiamos selecciones dependientes.
+    if st.session_state.get("_ultimo_giro") != giro:
+        st.session_state["_ultimo_giro"] = giro
+        st.session_state["servicio_demo"] = None
+        st.session_state["hora_demo"] = None
 
     servicios = NEGOCIOS[giro]
 
     st.markdown(
         f"""
         <div class="selected-state">
-            Elegiste <b>{giro}</b>. Ahora selecciona el servicio.
+            <span class="accent">01</span> &nbsp; <b>{giro}</b> · Elige el servicio
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    st.markdown("### Servicios disponibles")
+    nombres = list(servicios.keys())
+    for i in range(0, len(nombres), 2):
+        cols = st.columns(2, gap="small")
+        for j, nombre_servicio in enumerate(nombres[i:i + 2]):
+            minutos = servicios[nombre_servicio]
+            seleccionado = st.session_state.get("servicio_demo") == nombre_servicio
+            etiqueta = f"{'✓  ' if seleccionado else ''}{nombre_servicio}\n{duracion_legible(minutos)}"
+            with cols[j]:
+                if st.button(
+                    etiqueta,
+                    key=f"servicio_{i+j}",
+                    use_container_width=True,
+                    type="primary" if seleccionado else "secondary",
+                ):
+                    st.session_state["servicio_demo"] = nombre_servicio
+                    st.session_state["hora_demo"] = None
+                    st.rerun()
 
-    for nombre, minutos in servicios.items():
-        st.markdown(
-            f"""
-            <div class="service">
-                <span>{nombre}</span> · {duracion_legible(minutos)}
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    servicio = st.selectbox(
-        "Servicio",
-        list(servicios),
-        index=None,
-        placeholder="Selecciona un servicio",
-    )
-
+    servicio = st.session_state.get("servicio_demo")
     if not servicio:
-        st.info("Selecciona un servicio para ver horarios.")
         return
 
     duracion = servicios[servicio]
 
+    st.markdown(
+        f"""
+        <div class="selected-state">
+            <span class="accent">02</span> &nbsp;
+            <b>{servicio}</b> · {duracion_legible(duracion)} · Ahora elige el día
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
     fecha = st.date_input(
-        "Fecha",
+        "Fecha de la cita",
         min_value=date.today(),
         format="DD/MM/YYYY",
+        key="fecha_demo",
     )
+
+    fecha_key = str(fecha)
+    if st.session_state.get("_ultima_fecha") != fecha_key:
+        st.session_state["_ultima_fecha"] = fecha_key
+        st.session_state["hora_demo"] = None
 
     horas = horarios_disponibles(fecha, duracion, giro)
 
     if not horas:
-        st.info("No hay horarios disponibles para este servicio en esta fecha.")
+        st.warning("Ese día ya no tiene espacios disponibles. Prueba otra fecha.")
         return
 
-    hora = st.selectbox(
-        "Horario disponible",
-        horas,
-        index=None,
-        placeholder="Selecciona una hora",
+    st.markdown(
+        """
+        <div class="selected-state">
+            <span class="accent">03</span> &nbsp; Elige un horario disponible
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
+    # Horarios como chips: 3 por fila para que funcionen bien en móvil.
+    for i in range(0, len(horas), 3):
+        cols = st.columns(3, gap="small")
+        for j, hora_opcion in enumerate(horas[i:i + 3]):
+            seleccionado = st.session_state.get("hora_demo") == hora_opcion
+            with cols[j]:
+                if st.button(
+                    f"{'✓ ' if seleccionado else ''}{hora_opcion}",
+                    key=f"hora_{i+j}",
+                    use_container_width=True,
+                    type="primary" if seleccionado else "secondary",
+                ):
+                    st.session_state["hora_demo"] = hora_opcion
+                    st.rerun()
+
+    hora = st.session_state.get("hora_demo")
     if not hora:
-        st.info("Selecciona un horario para completar tus datos.")
         return
 
-    st.markdown("### Crea una cita de prueba")
+    fecha_legible = fecha.strftime("%d/%m/%Y")
+    st.markdown(
+        f"""
+        <div class="booking-summary">
+            <div class="eyebrow">Tu cita</div>
+            <strong>{servicio}</strong><br>
+            <span>{fecha_legible} · <span class="accent">{hora}</span> · {duracion_legible(duracion)}</span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    nombre = st.text_input("Nombre completo")
-    whatsapp = st.text_input("WhatsApp (10 dígitos)", max_chars=10)
-    comentarios = st.text_area("Comentarios adicionales")
+    st.markdown("### Solo faltan tus datos")
+
+    nombre = st.text_input(
+        "Nombre completo",
+        placeholder="Tu nombre",
+        key="nombre_demo",
+    )
+    whatsapp = st.text_input(
+        "WhatsApp",
+        max_chars=10,
+        placeholder="10 dígitos",
+        key="whatsapp_demo",
+    )
+    comentarios = st.text_area(
+        "Comentarios (opcional)",
+        placeholder="¿Hay algo que el negocio deba saber?",
+        key="comentarios_demo",
+    )
 
     datos_validos = bool(nombre.strip()) and whatsapp.isdigit() and len(whatsapp) == 10
 
+    if whatsapp and not (whatsapp.isdigit() and len(whatsapp) == 10):
+        st.caption("Ingresa los 10 números de tu WhatsApp.")
+
     enviar = st.button(
-        "Agendar cita de prueba",
+        "Confirmar mi cita",
         key="agendar_cita",
         use_container_width=True,
         disabled=not datos_validos,
+        type="primary",
     )
 
-    if whatsapp and not (whatsapp.isdigit() and len(whatsapp) == 10):
-        st.caption("El WhatsApp debe contener exactamente 10 números.")
-
     if enviar:
+        # Validación final para evitar doble reserva.
         if hora not in horarios_disponibles(fecha, duracion, giro):
-            st.error("Ese horario acaba de ocuparse. Elige otro.")
+            st.error("Ese horario acaba de ocuparse. Elige otro disponible.")
+            st.session_state["hora_demo"] = None
             return
 
         try:
@@ -492,18 +584,30 @@ def mostrar_experiencia():
                     st.session_state.get("plan") or "Sin seleccionar",
                 ]
             )
-            st.success("Cita demo guardada correctamente.")
+
+            st.success("¡Listo! Tu cita de prueba quedó confirmada.")
+            st.markdown(
+                f"""
+                <div class="booking-summary">
+                    <div class="eyebrow">Reserva confirmada</div>
+                    <strong>{nombre.strip()}</strong><br>
+                    <span>{servicio}</span><br>
+                    <span>{fecha_legible} · <span class="accent">{hora}</span></span>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
         except Exception:
-            st.error("No fue posible guardar la cita. Intenta de nuevo más tarde.")
+            st.error("No fue posible guardar la cita. Intenta nuevamente.")
 
 
 def mostrar_planes():
     st.markdown(
         """
         <section class="section">
-            <div class="eyebrow">Soluciones para crecer</div>
-            <h2>Descubre lo que KroniQ puede hacer por tu negocio</h2>
-            <p>Conoce qué incluye cada nivel.</p>
+            <div class="eyebrow">Elige cómo crecer</div>
+            <h2>Una agenda que crece con tu negocio</h2>
+            <p>Empieza simple y activa más herramientas cuando las necesites.</p>
         </section>
         """,
         unsafe_allow_html=True,
@@ -603,9 +707,9 @@ def main():
     st.markdown(
         """
         <section class="section">
-            <h2>¿Te imaginas esta agenda en tu negocio?</h2>
+            <h2>Tu negocio. Tu marca. Tu agenda.</h2>
             <p>
-                Vamos a conocernos y a diseñar una agenda para tu negocio.
+                Convirtamos esta experiencia en la agenda digital de tu negocio.
             </p>
         </section>
         """,
