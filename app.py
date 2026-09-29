@@ -1,4 +1,5 @@
 import io
+from html import escape
 from datetime import date, datetime, time, timedelta
 from pathlib import Path
 from urllib.parse import quote
@@ -286,6 +287,59 @@ def aplicar_estilos():
             background: rgba(255,255,255,.035) !important;
         }
 
+        .owner-header {
+            padding: 1rem 0 .35rem;
+        }
+
+        .owner-header h1 {
+            margin: 0 !important;
+            font-size: clamp(2rem, 8vw, 3rem) !important;
+        }
+
+        .metric-card {
+            min-height: 112px;
+            padding: 1rem;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            background: var(--surface);
+        }
+
+        .metric-card .value {
+            color: var(--text);
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 1.9rem;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .metric-card .label {
+            color: var(--muted);
+            font-size: .8rem;
+            margin-top: .3rem;
+        }
+
+        .appointment-card {
+            margin: .65rem 0;
+            padding: .9rem 1rem;
+            border-left: 3px solid var(--aqua);
+            border-radius: 0 16px 16px 0;
+            background: rgba(255,255,255,.035);
+        }
+
+        .appointment-card strong { color: var(--text); }
+        .appointment-card .meta { color: var(--muted); font-size: .84rem; }
+
+        div[role="radiogroup"] {
+            gap: .35rem;
+        }
+
+        div[role="radiogroup"] label {
+            padding: .55rem .7rem !important;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: var(--surface);
+        }
+
         @media (max-width: 640px) {
             .block-container {
                 padding-left: .78rem !important;
@@ -330,6 +384,56 @@ def get_sheet():
         scopes=["https://www.googleapis.com/auth/spreadsheets"],
     )
     return gspread.authorize(creds).open_by_key(SHEET_ID).sheet1
+
+
+COLUMNAS_CITAS = [
+    "id",
+    "giro",
+    "nombre",
+    "whatsapp",
+    "servicio",
+    "duracion",
+    "fecha",
+    "hora",
+    "estado",
+    "comentarios",
+    "plan",
+]
+
+
+def obtener_citas():
+    """Lee las reservaciones de la misma hoja usada por la agenda pública."""
+    filas = get_sheet().get_all_values()[1:]
+    citas = []
+
+    for fila in filas:
+        if not any(str(valor).strip() for valor in fila):
+            continue
+
+        valores = list(fila[:len(COLUMNAS_CITAS)])
+        valores.extend([""] * (len(COLUMNAS_CITAS) - len(valores)))
+        cita = dict(zip(COLUMNAS_CITAS, valores))
+
+        try:
+            cita["inicio"] = datetime.strptime(
+                f"{cita['fecha']} {cita['hora']}",
+                "%Y-%m-%d %I:%M %p",
+            )
+        except (TypeError, ValueError):
+            cita["inicio"] = None
+
+        try:
+            cita["duracion_min"] = int(cita["duracion"])
+        except (TypeError, ValueError):
+            cita["duracion_min"] = 0
+
+        citas.append(cita)
+
+    return citas
+
+
+def texto_seguro(valor):
+    return escape(str(valor or "").strip())
 
 
 def se_empalma(inicio_a, fin_a, inicio_b, fin_b):
@@ -690,10 +794,269 @@ def mostrar_planes():
             )
 
 
-def main():
-    aplicar_estilos()
-    st.session_state.setdefault("plan", None)
+def tarjeta_metrica(valor, etiqueta):
+    st.markdown(
+        f"""
+        <div class="metric-card">
+            <div class="value">{texto_seguro(valor)}</div>
+            <div class="label">{texto_seguro(etiqueta)}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
+
+def tarjeta_cita(cita, mostrar_fecha=True):
+    inicio = cita.get("inicio")
+    fecha_hora = "Fecha sin reconocer"
+    if inicio:
+        fecha_hora = (
+            inicio.strftime("%d/%m/%Y · %I:%M %p")
+            if mostrar_fecha
+            else inicio.strftime("%I:%M %p")
+        )
+
+    estado = cita.get("estado") or "Sin estado"
+    st.markdown(
+        f"""
+        <div class="appointment-card">
+            <strong>{texto_seguro(fecha_hora)} · {texto_seguro(cita['nombre'])}</strong><br>
+            <span>{texto_seguro(cita['servicio'])}</span><br>
+            <span class="meta">
+                {texto_seguro(cita['giro'])} · {texto_seguro(estado)} ·
+                {texto_seguro(cita['whatsapp'])}
+            </span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def mostrar_inicio_dueno(citas):
+    ahora = datetime.now()
+    hoy = ahora.date()
+    validas = [cita for cita in citas if cita.get("inicio")]
+    citas_hoy = [cita for cita in validas if cita["inicio"].date() == hoy]
+    proximas = sorted(
+        (cita for cita in validas if cita["inicio"] >= ahora),
+        key=lambda cita: cita["inicio"],
+    )
+    clientes = {
+        (cita["whatsapp"].strip() or cita["nombre"].strip().lower())
+        for cita in citas
+        if cita["whatsapp"].strip() or cita["nombre"].strip()
+    }
+
+    izquierda, derecha = st.columns(2, gap="small")
+    with izquierda:
+        tarjeta_metrica(len(citas_hoy), "Citas hoy")
+    with derecha:
+        tarjeta_metrica(len(clientes), "Clientes")
+
+    st.markdown("### Próximas citas")
+    if not proximas:
+        st.info("No hay próximas citas registradas.")
+        return
+
+    for cita in proximas[:8]:
+        tarjeta_cita(cita)
+
+
+def mostrar_agenda_dueno(citas):
+    st.markdown("### Agenda")
+    fecha_filtro = st.date_input(
+        "Ver día",
+        value=date.today(),
+        format="DD/MM/YYYY",
+        key="fecha_agenda_dueno",
+    )
+    del_dia = sorted(
+        (
+            cita for cita in citas
+            if cita.get("inicio") and cita["inicio"].date() == fecha_filtro
+        ),
+        key=lambda cita: cita["inicio"],
+    )
+
+    if not del_dia:
+        st.info("No hay citas para este día.")
+        return
+
+    for cita in del_dia:
+        tarjeta_cita(cita, mostrar_fecha=False)
+
+
+def mostrar_clientes_dueno(citas):
+    st.markdown("### Clientes")
+    clientes = {}
+
+    for cita in citas:
+        clave = cita["whatsapp"].strip() or cita["nombre"].strip().lower()
+        if not clave:
+            continue
+
+        cliente = clientes.setdefault(
+            clave,
+            {
+                "nombre": cita["nombre"],
+                "whatsapp": cita["whatsapp"],
+                "citas": 0,
+                "ultima": None,
+            },
+        )
+        cliente["citas"] += 1
+        if cita.get("inicio") and (
+            cliente["ultima"] is None or cita["inicio"] > cliente["ultima"]
+        ):
+            cliente["ultima"] = cita["inicio"]
+
+    if not clientes:
+        st.info("Aún no hay clientes registrados.")
+        return
+
+    busqueda = st.text_input(
+        "Buscar cliente",
+        placeholder="Nombre o WhatsApp",
+        key="buscar_cliente_dueno",
+    ).strip().lower()
+
+    lista = sorted(clientes.values(), key=lambda cliente: cliente["nombre"].lower())
+    if busqueda:
+        lista = [
+            cliente for cliente in lista
+            if busqueda in cliente["nombre"].lower()
+            or busqueda in cliente["whatsapp"].lower()
+        ]
+
+    if not lista:
+        st.info("No encontramos clientes con esa búsqueda.")
+        return
+
+    for cliente in lista:
+        ultima = (
+            cliente["ultima"].strftime("%d/%m/%Y")
+            if cliente["ultima"]
+            else "Sin fecha válida"
+        )
+        st.markdown(
+            f"""
+            <div class="appointment-card">
+                <strong>{texto_seguro(cliente['nombre'])}</strong><br>
+                <span>{texto_seguro(cliente['whatsapp'])}</span><br>
+                <span class="meta">
+                    {cliente['citas']} cita(s) · Última: {texto_seguro(ultima)}
+                </span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+
+def mostrar_ventas_dueno(citas):
+    st.markdown("### Ventas")
+    st.info(
+        "KroniQ todavía no guarda precios. Por eso esta sección muestra "
+        "actividad de reservaciones, sin inventar ingresos."
+    )
+
+    hoy = date.today()
+    mes_actual = (hoy.year, hoy.month)
+    citas_mes = [
+        cita for cita in citas
+        if cita.get("inicio")
+        and (cita["inicio"].year, cita["inicio"].month) == mes_actual
+    ]
+    completadas = [
+        cita for cita in citas_mes
+        if cita["estado"].strip().lower() in {"completada", "completado", "atendida"}
+    ]
+
+    izquierda, derecha = st.columns(2, gap="small")
+    with izquierda:
+        tarjeta_metrica(len(citas_mes), "Reservas este mes")
+    with derecha:
+        tarjeta_metrica(len(completadas), "Completadas")
+
+    conteo_servicios = {}
+    for cita in citas_mes:
+        servicio = cita["servicio"].strip() or "Sin servicio"
+        conteo_servicios[servicio] = conteo_servicios.get(servicio, 0) + 1
+
+    st.markdown("### Servicios reservados")
+    if not conteo_servicios:
+        st.caption("Aún no hay reservaciones este mes.")
+        return
+
+    for servicio, cantidad in sorted(
+        conteo_servicios.items(), key=lambda elemento: (-elemento[1], elemento[0])
+    ):
+        st.markdown(f"- **{texto_seguro(servicio)}:** {cantidad}")
+
+
+def acceso_dueno_permitido():
+    pin_configurado = st.secrets.get("owner_pin")
+    if not pin_configurado:
+        return True
+
+    if st.session_state.get("dueno_autorizado"):
+        return True
+
+    pin = st.text_input("PIN de dueño", type="password", key="pin_dueno")
+    if st.button("Entrar al panel", use_container_width=True, type="primary"):
+        if pin == str(pin_configurado):
+            st.session_state["dueno_autorizado"] = True
+            st.rerun()
+        else:
+            st.error("PIN incorrecto.")
+
+    return False
+
+
+def mostrar_panel_dueno():
+    st.markdown(
+        """
+        <section class="owner-header">
+            <div class="eyebrow">Panel del negocio</div>
+            <h1>KroniQ Dueño</h1>
+            <p>Las reservaciones de tu agenda, en un solo lugar.</p>
+        </section>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    if not acceso_dueno_permitido():
+        st.caption("Configura `owner_pin` en los secretos de Streamlit para proteger este acceso.")
+        return
+
+    if st.button("Actualizar datos", use_container_width=True, key="actualizar_dueno"):
+        st.rerun()
+
+    try:
+        citas = obtener_citas()
+    except Exception:
+        st.error("No fue posible leer las citas de Google Sheets. Intenta nuevamente.")
+        return
+
+    seccion = st.radio(
+        "Sección del panel",
+        ["Inicio", "Agenda", "Clientes", "Ventas"],
+        horizontal=True,
+        label_visibility="collapsed",
+        key="seccion_dueno",
+    )
+
+    if seccion == "Inicio":
+        mostrar_inicio_dueno(citas)
+    elif seccion == "Agenda":
+        mostrar_agenda_dueno(citas)
+    elif seccion == "Clientes":
+        mostrar_clientes_dueno(citas)
+    else:
+        mostrar_ventas_dueno(citas)
+
+
+def mostrar_agenda_publica():
+    """Experiencia pública original de KroniQ Booking."""
     hero = BASE_DIR / "hero-logo-kroniq.jpg"
 
     if hero.exists():
@@ -729,6 +1092,23 @@ def main():
     )
 
     st.caption("KroniQ Booking · Sincroniza tu tiempo, impulsa tu negocio.")
+
+
+def main():
+    aplicar_estilos()
+    st.session_state.setdefault("plan", None)
+    modo = st.radio(
+        "Vista de la aplicación",
+        ["Reservar", "KroniQ Dueño"],
+        horizontal=True,
+        label_visibility="collapsed",
+        key="modo_app",
+    )
+
+    if modo == "KroniQ Dueño":
+        mostrar_panel_dueno()
+    else:
+        mostrar_agenda_publica()
 
 
 if __name__ == "__main__":
