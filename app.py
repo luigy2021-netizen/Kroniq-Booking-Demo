@@ -1,4 +1,3 @@
-
 import io
 import hmac
 from html import escape
@@ -1102,32 +1101,39 @@ def mostrar_ventas_dueno(citas):
 # =====================================================
 
 def credenciales_configuradas():
-    correo = str(
-        st.secrets.get("owner_email", "")
+    celular = str(
+        st.secrets.get("owner_phone", "")
     ).strip()
 
     contrasena = str(
         st.secrets.get("owner_password", "")
     )
 
-    return bool(correo and contrasena)
+    return bool(celular and contrasena)
 
 
-def validar_credenciales(correo, contrasena):
+def normalizar_celular(celular):
+    return "".join(
+        caracter for caracter in str(celular)
+        if caracter.isdigit()
+    )
+
+
+def validar_credenciales(celular, contrasena):
     if not credenciales_configuradas():
         return False
 
-    correo_correcto = str(
-        st.secrets["owner_email"]
-    ).strip().lower()
+    celular_correcto = normalizar_celular(
+        st.secrets["owner_phone"]
+    )
 
     contrasena_correcta = str(
         st.secrets["owner_password"]
     )
 
-    correo_valido = hmac.compare_digest(
-        correo.strip().lower().encode("utf-8"),
-        correo_correcto.encode("utf-8"),
+    celular_valido = hmac.compare_digest(
+        normalizar_celular(celular).encode("utf-8"),
+        celular_correcto.encode("utf-8"),
     )
 
     contrasena_valida = hmac.compare_digest(
@@ -1135,7 +1141,7 @@ def validar_credenciales(correo, contrasena):
         contrasena_correcta.encode("utf-8"),
     )
 
-    return correo_valido and contrasena_valida
+    return celular_valido and contrasena_valida
 
 
 def mostrar_login_dueno():
@@ -1150,9 +1156,9 @@ def mostrar_login_dueno():
     st.markdown("### Iniciar sesión")
 
     with st.form("form_login_dueno"):
-        correo = st.text_input(
-            "Correo electrónico",
-            placeholder="admin@kroniqbooking.com",
+        celular = st.text_input(
+            "Número de celular",
+            placeholder="Incluye lada o código de país",
         )
 
         contrasena = st.text_input(
@@ -1173,12 +1179,12 @@ def mostrar_login_dueno():
                 "El acceso del propietario aún no está "
                 "configurado en Streamlit Secrets."
             )
-        elif validar_credenciales(correo, contrasena):
+        elif validar_credenciales(celular, contrasena):
             st.session_state["dueno_autorizado"] = True
             st.session_state["vista_app"] = "dueno"
             st.rerun()
         else:
-            st.error("Correo o contraseña incorrectos.")
+            st.error("Celular o contraseña incorrectos.")
 
     st.caption(
         "Acceso privado de KroniQ Booking."
