@@ -12,6 +12,10 @@ import streamlit as st
 from google.oauth2.service_account import Credentials
 
 
+# =====================================================
+# CONFIGURACION GENERAL
+# =====================================================
+
 st.set_page_config(
     page_title="KroniQ Booking",
     page_icon="🔷",
@@ -78,13 +82,22 @@ COMIDA_INICIO = time(14, 0)
 COMIDA_FIN = time(15, 0)
 
 COLUMNAS_CITAS = [
-    "id", "giro", "nombre", "whatsapp", "servicio",
-    "duracion", "fecha", "hora", "estado", "comentarios", "plan",
+    "id",
+    "giro",
+    "nombre",
+    "whatsapp",
+    "servicio",
+    "duracion",
+    "fecha",
+    "hora",
+    "estado",
+    "comentarios",
+    "plan",
 ]
 
 
 # =====================================================
-# DISEÑO KRONIQ
+# ESTILOS
 # =====================================================
 
 def aplicar_estilos():
@@ -107,8 +120,11 @@ def aplicar_estilos():
     [data-testid="stAppViewContainer"],
     .main {
         background:
-            radial-gradient(circle at 50% -10%,
-            rgba(35,116,122,.16), transparent 34rem),
+            radial-gradient(
+                circle at 50% -10%,
+                rgba(35,116,122,.16),
+                transparent 34rem
+            ),
             var(--bg) !important;
         color: var(--text) !important;
         font-family: "DM Sans", sans-serif;
@@ -384,8 +400,6 @@ def se_empalma(inicio_a, fin_a, inicio_b, fin_b):
 
 def horarios_disponibles(fecha, duracion, giro):
     citas = []
-
-    # No ofrecer horarios si no se puede verificar la agenda.
     filas = get_sheet().get_all_values()[1:]
 
     for fila in filas:
@@ -1084,7 +1098,7 @@ def mostrar_ventas_dueno(citas):
 
 
 # =====================================================
-# NUEVO: ACCESO PRIVADO DE PROPIETARIOS
+# ACCESO PRIVADO DEL PROPIETARIO
 # =====================================================
 
 def credenciales_configuradas():
@@ -1135,18 +1149,10 @@ def mostrar_login_dueno():
 
     st.markdown("### Iniciar sesión")
 
-    if not credenciales_configuradas():
-        st.error(
-            "Acceso no configurado. "
-            "Agrega owner_email y owner_password "
-            "en los secretos de Streamlit."
-        )
-        return
-
     with st.form("form_login_dueno"):
         correo = st.text_input(
             "Correo electrónico",
-            placeholder="correo@negocio.com",
+            placeholder="admin@kroniqbooking.com",
         )
 
         contrasena = st.text_input(
@@ -1162,7 +1168,12 @@ def mostrar_login_dueno():
         )
 
     if ingresar:
-        if validar_credenciales(correo, contrasena):
+        if not credenciales_configuradas():
+            st.error(
+                "El acceso del propietario aún no está "
+                "configurado en Streamlit Secrets."
+            )
+        elif validar_credenciales(correo, contrasena):
             st.session_state["dueno_autorizado"] = True
             st.session_state["vista_app"] = "dueno"
             st.rerun()
@@ -1170,8 +1181,7 @@ def mostrar_login_dueno():
             st.error("Correo o contraseña incorrectos.")
 
     st.caption(
-        "Tus datos de acceso son privados. "
-        "No compartas tu contraseña."
+        "Acceso privado de KroniQ Booking."
     )
 
 
@@ -1183,7 +1193,6 @@ def cerrar_sesion_dueno():
 
 
 def mostrar_panel_dueno():
-    # Nunca cargar datos privados antes de validar el acceso.
     if not st.session_state.get("dueno_autorizado", False):
         mostrar_login_dueno()
         return
