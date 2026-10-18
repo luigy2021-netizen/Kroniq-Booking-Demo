@@ -1438,6 +1438,7 @@ def main():
                 key="acceso_propietarios",
                 use_container_width=True,
             ):
+                st.query_params.clear()
                 st.session_state["vista_app"] = "login"
                 st.rerun()
 
