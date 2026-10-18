@@ -26,8 +26,7 @@ st.set_page_config(
 BASE_DIR = Path(__file__).parent
 
 APP_URL = (
-    "https://kroniq-booking-demo-oaq2qg7zgqmmfnzgcu9df"
-    ".streamlit.app"
+    "https://kroniq-booking-demo-luis2026.streamlit.app"
 )
 
 WHATSAPP_VENTAS = "526563079754"
