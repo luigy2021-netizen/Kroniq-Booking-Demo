@@ -1418,7 +1418,9 @@ def main():
     st.session_state.setdefault("plan", None)
     st.session_state.setdefault("vista_app", "publica")
 
-    if (
+    if st.query_params.get("business"):
+        st.session_state["vista_app"] = "publica"
+    elif (
         st.user.is_logged_in
         and not st.session_state.get("_login_detectado")
     ):
